@@ -1,1 +1,1 @@
-![](remote-cyberka/Overthewire/Natas/Attachments/{32CFA7FB-1AA4-4CC9-A328-D0505153BA36}.png)
+![png](remote-cyberka/Overthewire/Natas/Attachments/{32CFA7FB-1AA4-4CC9-A328-D0505153BA36}.png)
