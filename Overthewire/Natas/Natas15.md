@@ -86,7 +86,7 @@ for i in range (1, 33):
 print(password)
 ```
 
-Hasło to : hpkjkyvilqctew33qmuxl6edvfmw4sgo
+Hasło to : hPkjKYviLQctEW33QmuXL6eDVfMW4sGo
 
 Sprawdzenie
 ```
