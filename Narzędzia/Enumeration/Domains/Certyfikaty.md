@@ -1,0 +1,1 @@
+Mając certyfikat można zobaczyć na [https://crt.sh](https://crt.sh/) bazę danych wydania certyfikatów dla danej domeny.

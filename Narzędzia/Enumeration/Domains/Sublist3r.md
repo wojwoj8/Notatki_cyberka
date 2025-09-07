@@ -1,0 +1,1 @@
+Pozwala na automatyczne odkrywanie subdomen.
