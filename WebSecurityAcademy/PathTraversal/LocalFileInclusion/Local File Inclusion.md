@@ -32,3 +32,8 @@ Inny przykład to np. `/etc/passwd` jest filtrowane. Tutaj są 2 podejścia. Pie
 Inna opcja to aplikacja podmienia `../` na pusty string. Obejściem może być stosowanie zamiast `../../../` tego `....//....//....//` bo każde '../' zostanie usunięte i zostanie reszta która i tak pozwoli za zmianę folderu.
 
 Kolejna opcja to, że wymagany jest folder w ścieżce, np. `languages/` to wystarczy dać go na początku ścieżki a dalej standardowo path traversal.
+
+Czasami trzeba atakować po ciasteczkach, POST a nie GET, kiedy POST TRZEBA DODAĆ 
+HEADER: `Content-Type: application/x-www-form-urlencoded` albo po curl zrobić zapytanie.
+
+``
