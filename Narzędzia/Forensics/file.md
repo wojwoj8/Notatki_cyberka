@@ -1,0 +1,1 @@
+file pozwala na zobaczenie typu pliku

@@ -1,589 +1,176 @@
 # **Nmap Results**
 ```text
-Nmap output here
+# Nmap 7.95 scan initiated Tue Sep  9 12:01:51 2025 as: /usr/lib/nmap/nmap --privileged -Pn -p- --min-rate 2000 -sC -sV -oN nmap_scan.txt 10.10.245.245
+Nmap scan report for 10.10.245.245
+Host is up (0.044s latency).
+Not shown: 65533 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.11 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   3072 b7:75:b5:89:f0:24:2a:b2:70:88:08:32:99:d3:85:26 (RSA)
+|   256 94:1c:86:4e:9e:7a:11:86:20:d0:c2:82:19:c5:7f:2b (ECDSA)
+|_  256 28:64:a0:e9:e9:f9:db:c8:b9:0d:79:4e:b8:a5:f5:cd (ED25519)
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+|_http-title: Rick is sup4r cool
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Tue Sep  9 12:02:24 2025 -- 1 IP address (1 host up) scanned in 32.79 seconds
 ```
 
 <br>
 # **Service Enumeration**
 
-## **TCP/00**
-Document here:
-* Screenshots (web browser, terminal screen)
-* Service version numbers
-* Document your findings when interacting with the service at various stages
-
+## **TCP/80 - HTTP**
+Wygląd strony głównej
+![](Attachments/{1F87F4BD-993F-41B2-BA69-45EB7E695012}.png)
+W HTML strony znajduje się komentarz z nazwą użytkownika komputera (ssh)
+```
+<!--
+    Note to self, remember username!
+    Username: R1ckRul3s
+  -->
+```
 <br>
+Na serwerze zbajduje się folder `/assets` z następującymi plikami
+![](Attachments/{FBCBF6C7-18D1-4DB5-BC9D-0F919F367825}.png)
 
-## **UDP/00**  
-Document here:
-* Screenshots (web browser, terminal screen)
-* Service version numbers
-* Document your findings when interacting with the service at various stages
+Obrazy zostały przeskanowane pod kątem steganografi, metadanych oraz typu pliku za pomocą poleceń `file, binwalk, exiftool` i nie wykryto niczego podejrzanego.
 
+W pliku `robots.txt` znajduje się tylko napis "Wubbalubbadubdub"
+
+Skan popularnych plików na serwerze za pomocą słownika /dirb/common.txt
+![](Attachments/{2D9F1696-BB4B-4842-B1CB-7B9795B04758}%201.png)
+
+Widać, że jest plik login.php
+
+![](Attachments/{E3598131-A44C-4F6A-BCBA-C64091A4F220}.png)
+
+
+## **TCP/22 - SSH**  
+
+SSH nie działa, występuje błąd odmowy dostępu podczas próby jakiegokolwiek połączenia.
+![](Attachments/{7CD14631-E324-4D64-952F-3755AFF39FE7}.png)
 <br>
-
 # **Exploit**
-Document
-here:
-* Exploit used (link to exploit)
-* Explain how the exploit works against the service
-* Any modified code (and why you modified it)
-* Proof of exploit (screenshot of reverse shell with target IP address output)
 
-<br>
-<br>
+Za pomocą danych logowania "R1ckRul3s:Wubbalubbadubdub" udało się zalogować do portalu.
 
+![](Attachments/{9A22B7A6-C8C5-4E2C-B4BD-C00E7294E86D}.png)
+
+W HTML tego ekranu znajduje się komentarz w base64 `"Vm1wR1UxTnRWa2RUV0d4VFlrZFNjRlV3V2t0alJsWnlWbXQwVkUxV1duaFZNakExVkcxS1NHVkliRmhoTVhCb1ZsWmFWMVpWTVVWaGVqQT0=="`
+ Po 7-krotnym odkodowaniu okazuje się że jest to napis "rabbit hole"
+
+W command panel znajduje się input field, który pozwala na wykonanie poleceń i otrzymanie odpowiedzi
+**Wykonanie ls**
+![](Attachments/{E9599DC7-559D-46ED-83C9-4AA43F1F70F2}.png)
+**Żądanie w burp**: 
+![](Attachments/{BFD60DFA-1F05-48C7-B093-5885EB9912B9}.png)
+
+Polecenie `cat` nie działa, ale można wyświetlić pliki wpisując je w url.
+
+Sup3rS3cretPickl3Ingred.txt - `mr. meeseek hair`
+
+
+Druga flaga znajduje się w folderze home użytkownika rick. Z racji, że polecenie `cat` nie działa można spróbować wykorzystać polecenie `ul < plik`, które domyślnie podkreśla słowa, ale można wykorzystać przekierowanie i wypisać dzięki niemu zawartość pliku.
+
+
+``` payload
+command=ul+<+..%2F..%2F..%2Fhome/rick/second\+ingredients&sub=Execute
+```
+Wynik
+![](Attachments/{931B65C1-CCFB-4641-AAC1-DC9F8BB6D883}.png)
+
+Ostatnia flaga znajduje się w folderze root, ale nie da się jej odczytać za pomocą `ul` w folderze root. Z racji na posiadane prawa do sudo, można skopiować plik do folderu gdzie hostowana jest aplikacja internetowa i tam odczytać plik.
+
+![](Attachments/{E761A00C-7153-45D3-8ED0-FA2E71EBB810}.png)
 # **Post-Exploit Enumeration**
 ## **Operating Environment**
 ### OS & Kernel
 
 ```text
-Document here:
-  
-- Windows
-  - "systeminfo" or "Get-ComputerInfo" or "reg.exe query 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion'" output
-  - Check environment variables:
-    - CMD: "set"
-    - PowerShell: "Get-ChildItem Env:\"
-  
-- *nix
-  - "uname -a" output
-  - "cat /etc/os-release" (or similar) output
-  - Check environment variables:
-    - "env" or "set"
+Linux ip-10-10-139-35 5.15.0-1064-aws #70~20.04.1-Ubuntu SMP Fri Jun 14 15:42:13 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+
+NAME="Ubuntu"
+VERSION="20.04.6 LTS (Focal Fossa)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 20.04.6 LTS"
+VERSION_ID="20.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=focal
+UBUNTU_CODENAME=focal
 ```
 
-
-<br>
-<br>
 
 ### Current User
 
 ```text
-Document here:
- 
-- Windows
-  - "whoami /all" output
-  
-- *nix
-  - "id" output
-  - "sudo -l" output
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+
+Matching Defaults entries for www-data on ip-10-10-139-35:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User www-data may run the following commands on ip-10-10-139-35:
+    (ALL) NOPASSWD: ALL
 ```
-
-
-<br>
-<br>
-
+Użytkownik może używać poleceń jako każdy użytkownik, nie musi podwać hasła do tego i nie ma żadnych ograniczeń.
 ## **Users and Groups**
 
 ### Local Users
 
 ```text
-Document here any interesting username(s) after running the below commands:
-  
-- Windows
-  - "net user" or "Get-LocalUser" output
-  - "net user <username>" or "Get-LocalUser <username> | Select-Object *" to enumerate details about specific users
-  - Can you dump and pass/crack hashes from SAM using your current access?
-
-- *nix
-  - "cat /etc/passwd" output
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
 ```
-
-
-<br>
-<br>
+Mimo, że w folderze home jest folder "rick" to na systemie istnieje tylko użytkownik ubuntu.
 
 ### Local Groups
 
 ```text
-Document here any interesting group(s) after running the below commands:
-  
-- Windows
-  - "net localgroup" or "Get-LocalGroup" output
-  - "net localgroup <group_name>" or "Get-LocalGroupMember <group_name> | Select-Object *" to enumerate users of specific groups
-  
-- *nix
-  - "cat /etc/group" output
-  - "cat /etc/group | grep <username>" to check group memberships of specific users
+adm:x:4:syslog,ubuntu
+dialout:x:20:ubuntu
+cdrom:x:24:ubuntu
+floppy:x:25:ubuntu
+sudo:x:27:ubuntu
+audio:x:29:ubuntu
+dip:x:30:ubuntu
+video:x:44:ubuntu
+plugdev:x:46:ubuntu
+netdev:x:109:ubuntu
+lxd:x:110:ubuntu
+ubuntu:x:1000:
 ```
 
-
-<br>
-<br>
-
-### Domain Users
-
-```text
-Document here any interesting username(s) after running the below commands:
-  
-- Windows
-  - "net user /domain" or "Get-ADUser -Filter * -Properties *" output
-  - "net user <username> /domain" or "Get-ADUser -Identity <username> -Properties *" to enumerate details about specific domain users
-  - Not a local administrator and can't run PowerShell AD cmdlets?
-    - See here: https://notes.benheater.com/books/active-directory/page/powershell-ad-module-on-any-domain-host-as-any-user
-  - Can you dump and pass/crack local user / admin hashes from the SAM using your current access?
-  - Can you dump and pass/crack hashes from LSA using your current access?
-  - Any deleted objects in AD?
-    - `Get-ADObject -IncludeDeletedObjects -Filter 'Deleted -eq $true'`
-    - Can you restore them?
-        - `Get-ADObject -IncludeDeletedObjects -Filter 'Deleted -eq $true' | Restore-ADObject`
-    - Re-run BloodHound. Does this open any new attack paths?
-
-- *nix
-  - Check if joined to a domain
-    - /usr/sbin/realm list -a
-    - /usr/sbin/adcli info <realm_domain_name>
-
-  - No credential:
-
-    - Check for log entries containing possible usernames
-
-      - "find /var/log -type f -readable -exec grep -ail '<realm_domain_name>' {} \; 2>/dev/null"
-      - Then, grep through each log file and remove any garbage from potential binary files:
-
-        - Using strings: "strings /var/log/filename | grep -i '<realm_domain_name>'"
-        - If strings not available, try using od: "od -An -S 1 /var/log/filename | grep -i '<realm_domain_name>'"
-        - If od not available, try grep standalone: "grep -iao '.*<realm_domain_name>.*' /var/log/filename"
-
-      - Validate findings:
-        - Check if discovered usernames are valid: "getent passwd <domain_username>"
-        - If valid, check user group memberships: List "id <domain_username>"
-      - Check domain password and lockout policy for password spray feasibility
-
-    - See "Domain Groups", as certain commands there can reveal some additional usernames
-
-   - With a domain credential:
-
-     - If you have a valid domain user credential, you can try "ldapsearch"
-     - Dump all objects from LDAP: "ldapsearch -x -H ldap://dc-ip-here -D 'CN=username,DC=realmDomain,DC=realmTLD' -W -b 'DC=realmDomain,DC=realmTLD' 'objectClass=*'"
-     - Dump all users from LDAP: "ldapsearch -x -H ldap://dc-ip-here -D 'CN=username,DC=realmDomain,DC=realmTLD' -W -b 'DC=realmDomain,DC=realmTLD' 'objectClass=account'"
-
-
-  - If you're root on the domain-joined host:
-
-     - You can try best-effort dumping the SSSD cache:
-
-       - Using strings: "strings /var/lib/sss/db/cache_<realm_domain_name>.ldb | grep -iE '[ou|cn]=.*user.*'" | grep -iv 'disabled' | sort -u
-       - If strings not available, try using od: "od -An -S 1 /var/lib/sss/db/cache_<realm_domain_name>.ldb | grep -iE '[ou|cn]=.*user.*'" | grep -iv 'disabled' | sort -u
-       - If od not available, try grep standalone: "grep -iao '.*<realm_domain_name>.*' /var/lib/sss/db/cache_<realm_domain_name>.ldb | sed 's/[^[:print:]\r\t]/\n/g' | grep -iE '[ou|cn]=.*user.*' | grep -iv disabled"
-
-     - You can transfer the SSSD TDB cache for local parsing
-
-       - Default file path: /var/lib/sss/db/cache_<realm_domain_name>.tdb
-       - You can dump this file with tools such as "tdbtool" or "tdbdump"
-```
-
-
-<br>
-<br>
-
-### Domain Groups
-
-```text
-Document here any interesting group(s) after running the below commands:
-  
-- Windows
-  - "net group /domain" or "Get-ADGroup -Filter * -Properties *" output
-  - "net group <group_name> /domain" or "Get-ADGroup -Identity <group_name> | Get-ADGroupMember -Recursive" to enumerate members of specific domain groups
-  - Not a local administrator and can't run PowerShell AD cmdlets?
-    - See here: https://notes.benheater.com/books/active-directory/page/powershell-ad-module-on-any-domain-host-as-any-user
-  - Any deleted objects in AD?
-    - `Get-ADObject -IncludeDeletedObjects -Filter 'Deleted -eq $true'`
-    - Can you restore them?
-        - `Get-ADObject -IncludeDeletedObjects -Filter 'Deleted -eq $true' | Restore-ADObject`
-    - Re-run BloodHound. Does this open any new attack paths?
-
-- *nix
-
-  - Check if joined to a domain
-    - /usr/sbin/realm list -a
-    - /usr/sbin/adcli info <realm_domain_name>
-
-  - No credential:
-
-    - Enumerate default Active Directory security groups: https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#default-active-directory-security-groups
-
-      - "getent group 'Domain Admins@<realm_domain_name>'"
-      - "getent group 'Domain Users@<realm_domain_name>'"
-      - NOTE: "getent" will only return domain group members that have been cached on the local system, not all group members in the domain
-      - This can still build a substantial user list for password spraying (check domain password and lockout policy)
-
-  - With a domain credential:
-
-     - If you have a valid domain user credential, you can try "ldapsearch"
-     - Dump all objects from LDAP: "ldapsearch -x -H ldap://dc-ip-here -D 'CN=username,DC=realmDomain,DC=realmTLD' -W -b 'DC=realmDomain,DC=realmTLD' 'objectClass=*'"
-     - Dump all groups from LDAP: "ldapsearch -x -H ldap://dc-ip-here -D 'CN=username,DC=realmDomain,DC=realmTLD' -W -b 'DC=realmDomain,DC=realmTLD' 'objectClass=group'"
-
-  - If you're root on the domain-joined host:
-
-     - You can try dumping the SSSD cache:
-
-       - Using strings: "strings /var/lib/sss/db/cache_<realm_domain_name>.ldb | grep -i '<realm_domain_name>'"
-       - If strings not available, try using od: "od -An -S 1 /var/lib/sss/db/cache_<realm_domain_name>.ldb | grep -i '<realm_domain_name>'"
-       - If od not available, try grep standalone: "grep -iao '.*<realm_domain_name>.*' /var/lib/sss/db/cache_<realm_domain_name>.ldb | sed 's/[^[:print:]\r\t]/\n/g' | grep -iE '[ou|cn]=.*group.*' | grep -i '^CN='"
-
-     - You can transfer the SSSD TDB cache for local parsing
-
-       - Default file path: /var/lib/sss/db/cache_<realm_domain_name>.tdb
-       - You can dump this file with tools such as "tdbtool" or "tdbdump"
-```
-
-
-<br>
-<br>
 
 ## **Network Configurations**
 
 ### Network Interfaces
 
 ```text
-- Document current IP configuration and check for:
-  - Alternate NIC configurations
-  - Are there any Docker networks?
-  
-- Windows
-  - "ipconfig" or "Get-NetAdapter" output
-  
-- *nix
-  - "ip address" or "ifconfig" output
-  - If in a stripped down environment and no "ip" or "ifconfig"
-    - "hostname -I"
-    - "cat /var/lib/dhcp/dhclient.eth0.leases"
+1: lo:  mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: ens5:  mtu 9001 qdisc mq state UP group default qlen 1000
+    link/ether 02:ed:7c:64:1d:ed brd ff:ff:ff:ff:ff:ff
+    altname enp0s5
+    inet 10.10.139.35/16 brd 10.10.255.255 scope global dynamic ens5
+       valid_lft 3593sec preferred_lft 3593sec
+    inet6 fe80::ed:7cff:fe64:1ded/64 scope link 
+       valid_lft forever preferred_lft forever
 ```
-
-
-<br>
-
-### Open Ports
-
-```text
-- Check for:
-    - Ports firewalled from initial `nmap` scan
-    - Ports bound to loopback
-    - Ports bound to Docker hosts
-    - Ports bound to other NICs
-  
-- Windows
-  - "netstat -ano | findstr /i listening" or "Get-NetTCPConnection -State Listen" output
-  
-- *nix
-  - "netstat -tanup | grep -i listen" or "ss -tanup | grep -i listen" output
-  -  If in a stripped down environment and no "netstat" or "ss"
-    -  See this shell one-liner: https://notes.benheater.com/books/network-pivoting/page/alternate-ways-to-read-host-network-data#bkmrk-shell-one-liner-1
-```
-
-
-<br>
-
-### ARP Table
-
-```text
-- ARP table caches hosts at layer 2
-    - Any recent hosts with connectivity via configured NIC are cached
-    - Check for:
-        - Docker IPs
-        - Hosts on alternate NICs
-  
-- Windows
-  - "arp -a" or "Get-NetNeighbor" output
-  
-- *nix
-  - "ip neigh" or "arp -a" output
-    - If in a stripped down environment and now "ip" or "arp"
-      - "cat /proc/net/arp"
-```
-
-
-<br>
-
-### Routes
-
-```text
-- Check for:
-    - Routes providing access to additional subnets
-    - Docker subnets
-  
-- Windows
-  - "route print" or "Get-NetRoute" output
-  
-- *nix
-  - "ip route" or "route" output
-  - If in a stripped down environment and no ip or route
-    - See this shell one-liner: https://notes.benheater.com/books/network-pivoting/page/alternate-ways-to-read-host-network-data#bkmrk-shell-one-liner
-```
-
-
-<br>
-
-### Ping Sweep
-
-```text
-- Scope
-    - Always ensure the target hosts / subnets are in scope!
-
-- Layer 2 Host Discovery
-    - Is the subnet accessible via a NIC on the host?
-        - ARP scan will work
-        - Almost zero chance that ARP will be filtered
-
-- Layer 3 Host Discovery
-    - Perhaps you saw some alternate IPs in configuration files
-    - Or, maybe you saw IPs in the `netstat` state table
-    - If the subnets exist, but don't have a direct path via NIC
-        - The host is going to send the traffic to default gateway
-        - Default gateway will route the traffic to the target
-    - To ping sweep these subnets, you'll need to use:
-        - ICMP (ping)
-        - TCP / UDP scans (as ICMP may be blocked)
-    
-- Methodology:
-    - Look at the IP address space and network mask
-    - Layer 2
-        - `arp-scan` (Linux)
-        - `nmap -n -sn` (ARP if NIC exists, Linux & Windows)
-    - Layer 3
-        - `ping`
-        - `nmap -n -sn` (ICMP when no NIC, Linux & Windows)
-        - [Some other ideas here](https://notes.benheater.com/books/network-pivoting/page/alternative-network-scans)
-    - Layer 4
-        - Perform a port scan through tunnel / SOCKS on the target
-        - Transfer or use existing `nmap` binary on the target to port scan
-```
-
-
-<br>
-<br>
-
-## **Processes and Services**
-
-### Interesting Processes
-
-```text
-First...
-Enumerate processes:
-  
-- Windows
-  - "tasklist"
-  - "Get-Process"
-  - "Get-CimInstance -ClassName Win32_Process | Select-Object Name, @{Name = 'Owner' ; Expression = {$owner = $_ | Invoke-CimMethod -MethodName GetOwner -ErrorAction SilentlyContinue ; if ($owner.ReturnValue -eq 0) {$owner.Domain + '\' + $owner.User}}}, CommandLine | Sort-Object Owner | Format-List"
-  
-- *nix
-  - "ps aux --sort user"
-  
-Then...
-Document here:
-  - Any interesting processes run by users/administrators
-  - Any vulnerable applications
-  - Any intersting command line arguments visible
-```
-
-
-<br>
-<br>
-
-### Interesting Services
-
-```text
-- Windows
-  - First...
-    Enumerate services:
-  	  - "sc.exe query"
-  	  	- Then "sc.exe qc <service-name>"
-			- List the configuration for any interesting services
-  	  - Or "Get-CimInstance -ClassName Win32_Service | Select-Object Name, StartName, PathName | Sort-Object Name | Format-List"
-	  - Or "reg.exe query 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services'"
-		- Then "reg.exe query 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\service_name'"
-  - Then...
-  	Check for things like:
-  	  - Vulnerable service versions
-      - Unquoted service path
-      - Service path permissions too open?
-        - Can you overwrite the service binary?
-        - DLL injection?
-  
-- *nix
-  - First...
-  	Enumerate services:
-      - "service --status-all" or "systemctl list-units --type=service --state=running"
-  - Then...
-    Check for things like:
-      - Vulnerable service versions
-      - Configuration files with passwords or other information
-      - Writable unit files
-          - One-liner to check for writable service unit files: `systemctl list-units --state=running --type=service | grep '\.service' | awk -v FS=' ' '{print $1}' | xargs -I % systemctl status % | grep 'Loaded:' | cut -d '(' -f 2 | cut -d ';' -f 1 | xargs -I % find % -writable 2>/dev/null`
-  	  - Writable service binaries  
-  
-Then...
-Document here:
-  - Any interesting services or vulnerabilities
-  - Any vulnerable service versions
-  - Any intersting configuration files
-```
-
-
-<br>
-<br>
-
-## **Scheduled Tasks**
-
-### Interesting Scheduled Tasks
-
-```text
-First...
-Enumerate scheduled tasks:
-  
-- Windows
-  - schtasks /QUERY /FO LIST /V | findstr /i /c:"taskname" /c:"run as user" /c:"task to run"
-  - Get-CimInstance -Namespace Root/Microsoft/Windows/TaskScheduler -ClassName MSFT_ScheduledTask | Select-Object TaskName, @{Name = 'User' ; Expression = {$_.Principal.UserId}}, @{Name = 'Action' ; Expression = {($_.Actions.Execute + ' ' + $_.Actions.Arguments)}} | Format-List
-  
-- *nix
-  - "crontab -l"
-  - "cat /etc/cron* 2>/dev/null"
-  - "cat /var/spool/cron/crontabs/* 2>/dev/null"
-  
-Then...
-Document here:
-  - Any interesting scheduled tasks
-  - Any writable paths in the scheduled task
-  - Any intersting command line arguments visible
-```
-
-
-<br>
-<br>
-
-## **Interesting Files**
-### C:\InterestingDir\Interesting-File1.txt
-
-```text
-- Windows
-	- Check for writable files and directories
-  		- See https://github.com/0xBEN/CTF-Scripts/blob/main/HackTheBox/Axlle/Find-FileAccess.ps1
-	- Check for configuration files with passwords and other interesting info
-	- Check for scripts with external dependencies that can be overwritten or changed
-	- Some interesting places to check
-		- Check PATH variable for current user for possible interesting locations
-		- Also check for hidden items
-		- PowerShell History File: (Get-PSReadLineOption).HistorySavePath
-    	- Check for DPAPI cached credentials
-			- Credential Blobs
-				- "%USERPROFILE%\AppData\Local\Microsoft\Credentials"
-				- "%USERPROFILE%\AppData\Roaming\Microsoft\Credentials"
-			- Master Keys
-				- "%USERPROFILE%\AppData\Local\Microsoft\Protect"
-				- "%USERPROFILE%\AppData\Roaming\Microsoft\Protect"
-	- I reference %SYSTEMDRIVE%, as C: is not always the system volume
-		- "%SYSTEMDRIVE%\interesting_folder"
-		- "%SYSTEMDRIVE%\$RECYCLE.BIN"
-		- `Get-ChildItem -Force -File -Recurse "$env:SystemDrive\`$RECYCLE.BIN"`
-		- "%SYSTEMDRIVE%\Users\user_name"
-			- Desktop, Downloads, Documents, .ssh, etc
-			- AppData (may also have some interesting things in Local, Roaming)
-		- "%SYSTEMDRIVE%\Windows\System32\drivers\etc\hosts"
-		- "%SYSTEMDRIVE%\inetpub"
-		- "%SYSTEMDRIVE%\Program Files\program_name"
-		- "%SYSTEMDRIVE%\Program Files (x86)\program_name"
-		- "%SYSTEMDRIVE%\ProgramData"
-		- "%SYSTEMDRIVE%\Temp"
-		- "%SYSTEMDRIVE%\Windows\Temp"
-	- Check the Registry for passwords, configurations, interesting text
-		- HKEY_LOCAL_MACHINE or HKLM
-		- HKEY_CURRENT_USER or HKCU
-		- Search the HKLM hive recursively for the word 'password'
-			- "reg query HKLM /f password /t REG_SZ /s"
-  
-- *nix
-	- Check for SUID binaries
-		- "find / -type f -perm /4000 -exec ls -l {} \; 2>/dev/null"
-  	- [Check binary capabilities](https://linux-audit.com/kernel/capabilities/overview/)
- 		- "getcap-r / 2>/dev/null"
-	  	- If "getcap" command not found, check "/usr/bin/getcap" or "/usr/sbin/getcap" (probably "$PATH" issue)
-	- Check for interesting / writable scripts, writable directories or files
-		- `find /etc -writable -exec ls -l {} \; 2>/dev/null`
-  		- `find / -type f \( -user $(whoami) -o -group $(whoami) \) -exec ls -l {} \; 2>/dev/null
-	- Check for configuration files with passwords and other interesting info
-	- Check for scripts with external dependencies that can be overwritten or changed
-	- Use strings on interesting binaries to check for relative binary names and $PATH hijacking
-	- Some interesting places to check (check for hidden items)
-    	- Check PATH variable for current user for possible interesting locations
- 		- /interesting_folder
-		- /home/user_name
-			- .profile
-			- .bashrc, .zshrc
-			- .bash_history, .zsh_history
-			- Desktop, Downloads, Documents, .ssh, etc.
-			- PowerShell History File: (Get-PSReadLineOption).HistorySavePath
-		- /var/www/interesting_folder
-		- /var/mail/user_name
-		- /opt/interesting_folder
-		- /usr/local/interesting_folder
-		- /usr/local/bin/interesting_folder
-		- /usr/local/share/interesting_folder
-		- /etc/hosts
-		- /tmp
-		- /mnt
-		- /media
-		- /etc
-	- Look for interesting service folders
-	- Check for readable and/or writable configuration files
-	- May find cleartext passwords
-```
-
-
-<br>
-<br>
-
-### /opt/interesting_dir/interesting-file2.txt
-
-```text
-Add full file contents
-Or snippet of file contents
-```
-
-
-<br>
-<br>
-<br>
-<br>
-
-# **Privilege Escalation**  
-Document here:
-* Exploit used (link to exploit)
-* Explain how the exploit works 
-* Any modified code (and why you modified it)
-* Proof of privilege escalation (screenshot showing ip address and privileged username)
-	
-<br>
-<br>
-<br>
-<br>
-
-# **Persistence**
-Document here how you set up persistence on the target
-  
-<br>
-<br>
-<br>
-<br>
 
 # **Flags**
 
-### User
-
 ```text
-Flag here
+First ingredient: mr. meeseek hair
+Second ingredient: 1 jerry tear
+Last ingredient: fleeb juice
 ```
-
-
-<br>
-
-### Root
-
-```text
-Flag here
-```
-
-
-<br>
-<br>

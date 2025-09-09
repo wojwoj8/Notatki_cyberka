@@ -1,0 +1,1 @@
+binwalk pozwala na zobaczenie czy plik zawiera w sobie inny plik itp.

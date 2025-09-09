@@ -1,0 +1,1 @@
+exiftool - pozwala na zobaczenie metadanych pliku
