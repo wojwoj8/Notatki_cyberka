@@ -34,3 +34,17 @@ Dostaniemy to:
 `https://server.website.thm/flag?id=9`
 a żadanie serwera będzie:
 `Server Requesting: https://server.website.thm/flag?id=9&x=.website.thm/api/item?id=2`
+
+
+# Gdzie takie podatności
+
+- Parametr w URL to inny URL
+- parametr w URL to jakaś nazwa hosta np. `https://cos.com/form?server=api`
+- parametr w URL to jakiś path `https://cis.com/form?dst=/forms/contact`
+
+Jak wynik podatności się nie wyświetla to warto korzystać z burp i patrzeć na logi http.
+
+Metody przeciwdziałania to:
+- Deny list - blokowanie domen i subdomen oraz nawiązań do localhosta: `0, 0.0.0.0, 0000, 127.1, 127.*.*.*, 2130706433, 017700000001` albo subdomen które mają DNS taki jak `127.0.0.1.nip.io`, dodatkowo w chmurowych systemach adres `169.254.169.254` który zawiera metadane servera
+- allow list - url musi się zaczynać np od `https://cos.tam`
+- open redirect - jest link: `https://cos.com/link?url=https://inne.com`, przekierowuje on usera gdzieś indziej. Endpoint ma wpisane że url musi zaczynać się np. `https://cos.com/` to można wykorzystać to do przekierowania ruchu wewnętrznego na domenę atakującego.
