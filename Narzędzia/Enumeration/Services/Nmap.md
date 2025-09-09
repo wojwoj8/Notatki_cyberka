@@ -4,7 +4,7 @@ Skanowanie portów na atakowanym/testowanym urządzeniu.
 
 -pn - bez icmp (ping)
 -p- - wszystkie 65535 porty
---min-rate 2000 - 2000 pakietów na sekundę
+--min-rate 2000 - 2000 pakietów na sekundę (dosyć agresywnie)
 -sC - odpala domyślne skrypty nmapa (podatności, misconfiguration)
 -sV - pokazuje wersje skanowanych serwisów 
 -oN - zapisuje output do pliku
