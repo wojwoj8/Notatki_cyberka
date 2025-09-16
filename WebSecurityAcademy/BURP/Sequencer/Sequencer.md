@@ -1,0 +1,1 @@
+Pozwala na obliczenie entropi np. ciasteczek albo csrf i pozwolić np. określić kolejny token.
