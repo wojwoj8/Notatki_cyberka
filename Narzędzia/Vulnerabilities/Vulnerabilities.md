@@ -37,3 +37,24 @@ VPR - Vulnerability Priority Rating
 [NVD (National Vulnerability Database)](https://nvd.nist.gov/vuln) - zawiera wszystkie CVE (Common Vulnerabilities and Exposures)
 [Exploit-DB](http://exploit-db.com/) - zawiera exploity danych podatności
 
+# Wyszukiwanie podatności
+
+Może być automatyczne i manualne
+
+## Automatyczne
+
+Nessus - jest darmowy w wersji community oraz płatny. Płatny jest bardzo drogi i raczej wykorzystywany przez organizacje zapewniające testy penetracyjne albo audyty.
+
+Wady i zalety
+
+|   |   |
+|---|---|
+|**Advantage**|**Disadvantage**|
+|Automated scans are easy to repeat, and the results can be shared within a team with ease.|People can often become reliant on these tools.|
+|These scanners are quick and can test numerous applications efficiently.|They are extremely "loud" and produce a lot of traffic and logging. This is not good if you are trying to bypass firewalls and the likes.|
+|Open-source solutions exist.|Open-source solutions are often basic and require expensive licenses to have useful features.|
+|Automated scanners cover a wide range of different vulnerabilities that may be hard to manually search for.|They often do not find every vulnerability on an application.|
+
+## Manualne
+
+Bazy jak [Rapid7](https://www.rapid7.com/db/), exploitdb, github, searchsploit (kopia offline exploit-db)
