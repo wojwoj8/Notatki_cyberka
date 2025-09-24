@@ -4,3 +4,7 @@ Przykład użycia:
 ```
 xfreerdp3 /u:JohnDoe /p:Pwd123! /v:192.168.1.100
 ```
+
+```
+xfreerdp3 /dynamic-resolution +clipboard /cert:ignore /v:10.10.54.14 /u:thm-unpriv /p:'Password321'
+```
