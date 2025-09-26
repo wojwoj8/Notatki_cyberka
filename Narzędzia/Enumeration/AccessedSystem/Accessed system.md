@@ -136,7 +136,7 @@ Znalezienie konkretnych pozwoleń plików:
 Znalezienie plików z bitem SUID - pliki które można wykonywać z pozwoleniami użytkownika który ten bit ustawił `find / -perm -u=s -type f 2>/dev/null`
 
 `find / -type f -perm -04000 -ls 2>/dev/null` - pliki z ustawionym SUID i GUID
-
+[Do abuse](https://gtfobins.github.io/)
 # Inne przydatne polecenia
 - `locate` - szuka plików po nazwie
 - `grep` 
