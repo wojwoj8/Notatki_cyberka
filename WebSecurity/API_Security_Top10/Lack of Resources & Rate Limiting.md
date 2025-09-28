@@ -1,0 +1,1 @@
+Brak rate limitingu prowadzi do DoS i to całe znaczy że API nie ma żadnych limitów na ilość userów, częstotliwość, wielkość danych przesyłanych itp.

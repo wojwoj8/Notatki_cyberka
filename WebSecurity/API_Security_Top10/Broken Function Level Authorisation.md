@@ -1,0 +1,1 @@
+Jak user z niskimi uprzywilejowaniami omija zabezpieczenia systemu i dostaje dostęp do danych np. podszywając się pod Admina.
