@@ -1,0 +1,1 @@
+Nie filtrowanie i bezpośrednie przetwarzanie danych z front-endu.

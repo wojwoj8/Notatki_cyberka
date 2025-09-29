@@ -1,0 +1,1 @@
+Wytępuje jak np. Jest wprowadzone nowe APIv2 a stare APIv1 nie jest usunięte i stare api może mieć dużo podatności itp.

@@ -1,0 +1,1 @@
+Zła konfiguracja np. poblicznie dostępna chmura, złe CORS, wypisywanie dokładnych błędów z wrażliwymi danymi.

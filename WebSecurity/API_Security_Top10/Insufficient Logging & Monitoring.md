@@ -1,0 +1,1 @@
+Warto rejestrować ruch na stronie i robić logi w celu np. namierzenia hackera. Dobrze korzystać z SIEM.
