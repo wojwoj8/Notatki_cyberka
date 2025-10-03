@@ -24,8 +24,11 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 ## **TCP/80 - HTTP**
 Wygląd strony głównej
+
 ![](Attachments/{1F87F4BD-993F-41B2-BA69-45EB7E695012}.png)
+
 W HTML strony znajduje się komentarz z nazwą użytkownika komputera (ssh)
+
 ```
 <!--
     Note to self, remember username!
@@ -34,6 +37,7 @@ W HTML strony znajduje się komentarz z nazwą użytkownika komputera (ssh)
 ```
 <br>
 Na serwerze zbajduje się folder `/assets` z następującymi plikami
+
 ![](Attachments/{FBCBF6C7-18D1-4DB5-BC9D-0F919F367825}.png)
 
 Obrazy zostały przeskanowane pod kątem steganografi, metadanych oraz typu pliku za pomocą poleceń `file, binwalk, exiftool` i nie wykryto niczego podejrzanego.
@@ -41,6 +45,7 @@ Obrazy zostały przeskanowane pod kątem steganografi, metadanych oraz typu plik
 W pliku `robots.txt` znajduje się tylko napis "Wubbalubbadubdub"
 
 Skan popularnych plików na serwerze za pomocą słownika /dirb/common.txt
+
 ![](Attachments/{2D9F1696-BB4B-4842-B1CB-7B9795B04758}%201.png)
 
 Widać, że jest plik login.php
@@ -64,8 +69,11 @@ W HTML tego ekranu znajduje się komentarz w base64 `"Vm1wR1UxTnRWa2RUV0d4VFlrZF
 
 W command panel znajduje się input field, który pozwala na wykonanie poleceń i otrzymanie odpowiedzi
 **Wykonanie ls**
+
 ![](Attachments/{E9599DC7-559D-46ED-83C9-4AA43F1F70F2}.png)
+
 **Żądanie w burp**: 
+
 ![](Attachments/{BFD60DFA-1F05-48C7-B093-5885EB9912B9}.png)
 
 Polecenie `cat` nie działa, ale można wyświetlić pliki wpisując je w url.
@@ -79,7 +87,9 @@ Druga flaga znajduje się w folderze home użytkownika rick. Z racji, że polece
 ``` payload
 command=ul+<+..%2F..%2F..%2Fhome/rick/second\+ingredients&sub=Execute
 ```
+
 Wynik
+
 ![](Attachments/{931B65C1-CCFB-4641-AAC1-DC9F8BB6D883}.png)
 
 Ostatnia flaga znajduje się w folderze root, ale nie da się jej odczytać za pomocą `ul` w folderze root. Z racji na posiadane prawa do sudo, można skopiować plik do folderu gdzie hostowana jest aplikacja internetowa i tam odczytać plik.

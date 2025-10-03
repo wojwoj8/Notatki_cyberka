@@ -27,9 +27,11 @@ Nmap done: 1 IP address (1 host up) scanned in 25.20 seconds
 ## Tcp/80 - HTTP
 
 Na porcie 80 znajduje się aplikacja internetowa pokazująca wynik polecenia `ip a`, `netstat`, oraz możliwe do pobrania dane na temat ruchu sieciowego w formacie pcap.
+
 ![](Attachments/{7AF4A74F-D299-48DD-985C-66B5B7176276}.png)
 
 Widok okna z plikami PCAP zawiera w URL id, które można edytować w celu dostania się do innego zestawu danych.
+
 ![](Attachments/{06BE267B-4323-4187-A088-23F4E3B849C3}.png)
 
 Wpisując na końcu URL numer 0, można zdobyć logi z transmisji FTP gdzie znajdują się dane logowania.
