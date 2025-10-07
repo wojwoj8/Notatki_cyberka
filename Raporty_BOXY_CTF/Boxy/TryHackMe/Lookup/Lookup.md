@@ -157,7 +157,7 @@ Teraz uruchomienie programu `pwm` spowoduje w pierwszej kolejności wykorzystani
 
 ![](Attachments/{0E7ABE0C-50A8-44C4-863F-86D9199FBA80}.png)
 
-Następnie wykorzystałem wcześniej napisany [program w pythone](remote-cyberka/Raporty_BOXY_CTF/Boxy/TryHackMe/Lookup/suBF.py) do ataku bruteforce z tymi hasłami na su w celu wejścia na konto think.
+Następnie wykorzystałem wcześniej napisany [program w pythone](suBF.py) do ataku bruteforce z tymi hasłami na su w celu wejścia na konto think.
 
 ![](Attachments/{98D30CB1-2C24-4DB9-B381-C472FB02ABEE}.png)
 

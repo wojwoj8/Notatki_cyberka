@@ -28,4 +28,4 @@ Odpalenie pliku `zeek -C -r sample.pcap`
 |**-C**|Ignoring checksum errors.|
 |**-v**|Version information.|
 
-[Cheet sheet do logów](remote-cyberka/SOC_L1/NetSec/Zeek/corelight-cheatsheet-poster.pdf) 
+[Cheet sheet do logów](corelight-cheatsheet-poster.pdf) 
