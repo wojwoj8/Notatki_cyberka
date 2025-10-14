@@ -85,19 +85,7 @@ sudo systemctl disable --now dhcpcd
 
 ### KDE
 
-Sterowniki:
-```
-sudo pacman -S xorg xorg-xinit mesa
-```
-
-I kolejne DLA VMWARE TYLKO:
-
-```
-sudo pacman -S open-vm-tools xf86-video-vmware
-sudo systemctl enable --now vmtoolsd.service
-```
-
-Tam jeszcze jakieś cuda były 
+`sudo pacman -S plasma-desktop` - sam desktop, lepiej jeszcze dograć coś tam
 
 Dalej `SDDM` - graphical login srcreen
 
