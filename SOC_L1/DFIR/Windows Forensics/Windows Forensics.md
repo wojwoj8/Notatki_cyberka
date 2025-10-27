@@ -121,4 +121,112 @@ Usługi -In this registry key, if the `start`   key is set to 0x02, this mea
 
 SAM zawiera info o koncie użytkownika, informacje logowania, info grup.
 
+`%SystemRoot%/system32/config/SAM` - SAM
+
 `SAM\Domains\Account\Users`
+
+### Ostatnie pliki
+
+Ostatnie pliki (to co w windows explorer) jest w NETUSER hive
+`NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs`
+Można szukać po np. rozszerzeniach plików 
+`NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs\.pdf`
+
+### Office Recent Files
+
+`NTUSER.DAT\Software\Microsoft\Office\VERSION`
+Dla wersji office
+`NTUSER.DAT\Software\Microsoft\Office\15.0\Word`
+
+Od Office 365 teraz dodatkowo potrzebne jest live ID
+`NTUSER.DAT\Software\Microsoft\Office\VERSION\UserMRU\LiveID_####\FileMRU`
+
+### ShellBags
+
+When any user opens a folder, it opens in a specific layout. Users can change this layout according to their preferences. These layouts can be different for different folders. This information about the Windows _'shell'_  is stored and can identify the Most Recently Used files and folders. Since this setting is different for each user, it is located in the user hives.
+
+`USRCLASS.DAT\Local Settings\Software\Microsoft\Windows\Shell\Bags`
+
+`USRCLASS.DAT\Local Settings\Software\Microsoft\Windows\Shell\BagMRU`
+
+`NTUSER.DAT\Software\Microsoft\Windows\Shell\BagMRU`
+
+`NTUSER.DAT\Software\Microsoft\Windows\Shell\Bags`
+
+### Open/Save and LastVisited Dialog MRUs
+`NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePIDlMRU`
+
+`NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU`
+
+### Windows Explorer Address/Search Bars
+
+`NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths`
+
+`NTUSER.DAT\Software\Microsoft\Windows\CurrentVersion\Explorer\WordWheelQuery`
+
+### UserAssist
+
+Windows śledzi aplikacje uruchomione z windows explorer (nie z terminala), dane są w NETUSER hive mapowane po GUID każdego usera. Tutaj jest path z jakiego miejsca były instalowane aplikacje.
+`NTUSER.DAT\Software\Microsoft\Windows\Currentversion\Explorer\UserAssist\{GUID}\Count`
+
+### ShimCache
+
+ShimCache is a mechanism used to keep track of application compatibility with the OS and tracks all applications launched on the machine. Its main purpose in Windows is to ensure backward compatibility of applications. It is also called Application Compatibility Cache (AppCompatCache). It is located in the following location in the SYSTEM hive
+
+`SYSTEM\CurrentControlSet\Control\Session Manager\AppCompatCache`
+
+ShimCache stores file name, file size, and last modified time of the executables.
+
+Do przeczytania tego potrzeba `AppCompatCache Parser` - program z paczki narzędzi od Eric Zimmerman. Odpalenie:
+```
+AppCompatCacheParser.exe --csv <path to save output> -f <path to SYSTEM hive for data parsing> -c <control set to parse>
+```
+
+Dalej można wyświetlić w EZviewer
+
+### AmCache
+
+The AmCache hive is an artifact related to ShimCache. This performs a similar function to ShimCache, and stores additional data related to program executions. This data includes execution path, installation, execution and deletion times, and SHA1 hashes of the executed programs.
+
+`C:\Windows\appcompat\Programs\Amcache.hve`
+
+Info o ostatnio odpalonych programach
+
+`Amcache.hve\Root\File\{Volume GUID}\`
+
+### BAM/DAM
+
+Background Activity Monitor or BAM keeps a tab on the activity of background applications. Similar Desktop Activity Moderator or DAM is a part of Microsoft Windows that optimizes the power consumption of the device. Both of these are a part of the Modern Standby system in Microsoft Windows. Logs contains information about last run programs, their full paths, and last execution time
+
+`SYSTEM\CurrentControlSet\Services\bam\UserSettings\{SID}`
+
+`SYSTEM\CurrentControlSet\Services\dam\UserSettings\{SID}`
+
+### Device identification
+
+Historia podłączonych USB
+
+`SYSTEM\CurrentControlSet\Enum\USBSTOR`
+
+`SYSTEM\CurrentControlSet\Enum\USB`
+
+### First/Last Times
+
+Pierwsze i ostatnie podłączenie urządzenia
+`SYSTEM\CurrentControlSet\Enum\USBSTOR\Ven_Prod_Version\USBSerial#\Properties\{83da6326-97a6-4088-9453-a19231573b29}\####`
+
+In this key, the #### sign can be replaced by the following digits to get the required information:
+
+|           |                       |
+| --------- | --------------------- |
+| **Value** | **Information**       |
+| 0064      | First Connection time |
+| 0066      | Last Connection time  |
+| 0067      | Last removal time     |
+
+### USB device Volume Name
+
+`OFTWARE\Microsoft\Windows Portable Devices\Devices`
+
+We can compare the GUID we see here in this registry key and compare it with the Disk ID we see on keys mentioned in device identification to correlate the names with unique devices.
+
