@@ -85,3 +85,5 @@ root@thm-vm:~$ ausearch -i -k proc_wget
 - [Falco](https://falco.org/): A modern, open-source solution, ideal for monitoring containerized systems
 - [Osquery](https://osquery.io/): An interesting tool that can be broadly used for various security purposes
 - [EDRs](https://tryhackme.com/room/introductiontoedr): Most EDR solutions can track and monitor various Linux runtime events
+
+
