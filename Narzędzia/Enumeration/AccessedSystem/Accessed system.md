@@ -137,6 +137,8 @@ Znalezienie plików z bitem SUID - pliki które można wykonywać z pozwoleniami
 
 `find / -type f -perm -04000 -ls 2>/dev/null` - pliki z ustawionym SUID i GUID
 [Do abuse](https://gtfobins.github.io/)
+
+Na windows podobne do gtfobins jest [LOLBAS](https://lolbas-project.github.io/)
 # Inne przydatne polecenia
 - `locate` - szuka plików po nazwie
 - `grep` 
