@@ -71,3 +71,11 @@ Contains messages that are recorded by the host about system activity. The detai
 ##### Third-party logs
 
 W `/var/log`, logi różnych aplikacji.
+
+- `/var/log/messages` - a general log for Linux systems
+- `/var/log/auth.log` - a log file that lists all authentication attempts (Debian-based systems)
+- `/var/log/secure` - a log file that lists all authentication attempts (Red Hat and Fedora-based systems)
+- `/var/log/utmp` - an access log that contains information regarding users that are currently logged into the system
+- `/var/log/wtmp` - an access log that contains information for all users that have logged in and out of the system
+- `/var/log/kern.log` - a log file containing messages from the kernel
+- `/var/log/boot.log` - a log file that contains start-up messages and boot information

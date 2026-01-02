@@ -501,7 +501,7 @@ Document here:
 	  	- If "getcap" command not found, check "/usr/bin/getcap" or "/usr/sbin/getcap" (probably "$PATH" issue)
 	- Check for interesting / writable scripts, writable directories or files
 		- `find /etc -writable -exec ls -l {} \; 2>/dev/null`
-  		- `find / -type f \( -user $(whoami) -o -group $(whoami) \) -exec ls -l {} \; 2>/dev/null
+  		- `find / -type f \( -user $(whoami) -o -group $(whoami) \) -exec ls -l {} \; 2>/dev/null`
 	- Check for configuration files with passwords and other interesting info
 	- Check for scripts with external dependencies that can be overwritten or changed
 	- Use strings on interesting binaries to check for relative binary names and $PATH hijacking
