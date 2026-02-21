@@ -1,6 +1,6 @@
 # **Nmap Results**
 ```text
-Nmap output here
+nmap IP -p- --min-rate 2000 -Pn -sC -sV --oN nmap_scan.txt
 ```
 
 <br>
